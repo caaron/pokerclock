@@ -1,0 +1,19 @@
+<tournament title='Quick Test'>
+
+   <banners path='./examples/banners' minutes='0.1'/>   
+   <sounds path='./examples/sounds'/>
+   
+   <players 
+		start='32' 
+		startstack='1000'>
+   </players>
+   
+   <level name='100-200' minutes='2'/>
+   <level name='200-500' minutes='2'/>
+   <break name='Break' minutes='2'/>
+
+   <level name='500-1k' minutes='2'/>
+   <level name='1k-2k' minutes='2'/>
+   <break name='End of Day' minutes='720'/>
+   
+</tournament>

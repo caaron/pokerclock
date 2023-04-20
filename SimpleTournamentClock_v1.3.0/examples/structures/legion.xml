@@ -1,0 +1,25 @@
+<tournament title='Turbo Event'>
+
+   <banners path='./examples/banners' minutes='5'></banners>
+   
+   <sounds path='./examples/sounds'></sounds>
+
+   <buyin amount="20" chips="5000"></buyin>
+   <rebuy amount="20" chips="5000"></rebuy>
+   
+   <level name='25-50' minutes='20' colorup="False"></level>
+   <level name='50-100' minutes='20' colorup="False"></level>
+   <level name='100-200' minutes='20' colorup="False"></level>
+   <break name='Break' minutes='10' colorup="True"></break>
+   <level name='200-400' minutes='20' colorup="False"></level>
+   <level name='500-1k' minutes='20' colorup="True"></level>
+   <level name='1k-2k' minutes='20' colorup="False"></level>
+   <break name='Break' minutes='10' colorup="False"></break>
+   <level name='2k-4k' minutes='20' colorup="False"></level>
+   <level name='4k-8k' minutes='20' colorup="False"></level>
+   <level name='6k-12k' minutes='20' colorup="False"></level>
+   <level name='12k-25k' minutes='20' colorup="False"></level>
+   
+   <break name='End of Day' minutes='720'></break>
+   
+</tournament>

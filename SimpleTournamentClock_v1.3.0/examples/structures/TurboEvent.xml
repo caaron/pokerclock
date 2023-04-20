@@ -1,0 +1,34 @@
+<tournament title='Turbo Event'>
+
+   <banners path='./examples/banners' minutes='5'></banners>
+   
+   <sounds path='./examples/sounds'></sounds>
+   
+   <players 
+		start='32' 
+		startstack='10000' 
+		out='0' 
+		addon='0' 
+		addonstack='10000'
+		rebuy='0' 
+		rebuystack='10000'
+		paid='8'>
+	</players>
+   
+   <level name='100-200' minutes='20'></level>
+   <level name='200-500' minutes='20'></level>
+   <level name='500-1k' minutes='20'></level>
+   <level name='1k-2k' minutes='20'></level>
+   <level name='2k-4k' minutes='20'></level>
+   
+   <break name='Break' minutes='20'></break>
+   
+   <level name='4k-8k 1k' minutes='20'></level>
+   <level name='6k-12k 1k' minutes='20'></level>
+   <level name='12k-25k 2k' minutes='20'></level>
+   <level name='25k-50k 5k' minutes='20'></level>
+   <level name='50k-100k 10k' minutes='20'></level>
+   
+   <break name='End of Day' minutes='720'></break>
+   
+</tournament>

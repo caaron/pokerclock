@@ -1,0 +1,67 @@
+<tournament title='One-Day Event'>
+
+   <banners path='./examples/banners' minutes='5'/>
+   
+   <sounds path='./examples/sounds'/>
+   
+   <players 
+		start='200' 
+		startstack='20000' 
+		out='0' 
+		addon='0' 
+		addonstack='20000'
+		rebuy='0' 
+		rebuystack='20000'
+		paid='18'>
+	</players>
+	
+   <level name='25-50' minutes='20'/>
+   <level name='50-100' minutes='20'/>
+   <level name='100-200' minutes='20'/>
+   <level name='150-300 25' minutes='20'/>
+   <level name='200-400 50' minutes='20'/>
+   
+   <break name='First Break' minutes='20'/>
+   
+   <level name='300-600 75' minutes='20'/>
+   <level name='400-800 100' minutes='20'/>
+   <level name='600-1.2k 200' minutes='20'/>
+   <level name='800-1.6k 200' minutes='20'/>
+   <level name='1k-2k 300' minutes='20'/>
+   
+   <break name='Second Break' minutes='20'/>
+   
+   <level name='1.5k-3k 400' minutes='20'/>
+   <level name='2k-4k 500' minutes='20'/>
+   <level name='3k-6k 500' minutes='20'/>
+   <level name='4k-8k 1k' minutes='20'/>
+   <level name='6k-12k 1.5k' minutes='20'/>
+   
+   <break name='Dinner Break' minutes='50'/>
+   
+   <level name='8k-16k 2k' minutes='20'/>
+   <level name='10k-20k 3k' minutes='20'/>
+   <level name='15k-30k 4k' minutes='20'/>
+   <level name='20k-40k 5k' minutes='20'/>
+   <level name='30k-60k 10k' minutes='20'/>
+   
+   <break name='Fourth Break' minutes='20'/>
+   
+   <level name='40k-80k 10k' minutes='20'/>
+   <level name='60k-120k 15k' minutes='20'/>
+   <level name='80k-160k 20k' minutes='20'/>
+   <level name='100k-200k 30k' minutes='20'/>
+   <level name='150k-300k 40k' minutes='20'/>
+   
+   <break name='Fifth Break' minutes='20'/>
+   
+   <level name='200k-400k 50k' minutes='20'/>
+   <level name='300k-600k 50k' minutes='20'/>
+   <level name='400k-800k 100k' minutes='20'/>
+   <level name='500k-1M 100k' minutes='20'/>
+   <level name='750k-1.5M 250k' minutes='20'/>
+   <level name='1M-2M 500k' minutes='20'/>
+   
+   <break name='End Of Day' minutes='720'/>
+   
+</tournament>
