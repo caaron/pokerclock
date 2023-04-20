@@ -102,115 +102,18 @@ class Tournament(object):
     
     self._sounds_path = None
     
-    self._players_start = 0
-    self._players_startstack = 10000
-    self._players_paid = 0
+    self._total_players = 0
+    self._num_players = 0
     self._players_out = 0
     self._players_addon = 0
     self._players_addonstack = 0
-    self._players_rebuy = 0
+    self._num_players_rebuy = 0
     self._players_rebuystack = 0
     
     self._timeblocks = [] # tuples of the form (start_at_seconds, duration, name, is_break)
     self._current_timeblock = 0
     
     self._pause = True # start the tournament(?)
-    
-  @property
-  def tournament_title(self):
-    return self._tournament_title
-
-  @tournament_title.setter
-  def tournament_title(self, value):
-    self._tournament_title = value
-
-  @property
-  def banners_path(self):
-    return self._banners_path
-    
-  @banners_path.setter
-  def banners_path(self, value):
-    self._banners_path = value
-  
-  @property
-  def banners_seconds(self):
-    return self._banners_seconds
-
-  @banners_seconds.setter
-  def banners_seconds(self, value):
-    self._banners_seconds = safe_int(value)
-  
-  @property
-  def sounds_path(self):
-    return self._sounds_path
-    
-  @sounds_path.setter
-  def sounds_path(self, value):
-    self._sounds_path = value
-    
-  @property
-  def players_startstack(self):
-    return self._players_startstack
-    
-  @players_startstack.setter
-  def players_startstack(self, value):
-    self._players_startstack = safe_int(value)
-    
-  @property
-  def players_start(self):
-    return self._players_start
-    
-  @players_start.setter
-  def players_start(self, value):
-    self._players_start = safe_int(value)  
-    
-  @property
-  def players_paid(self):
-    return self._players_paid
-    
-  @players_paid.setter
-  def players_paid(self, value):
-    self._players_paid = safe_int(value)  
-    
-  @property
-  def players_out(self):
-    return self._players_out
-    
-  @players_out.setter
-  def players_out(self, value):
-    self._players_out = safe_int(value)  
-    
-  @property
-  def players_addon(self):
-    return self._players_addon
-    
-  @players_addon.setter
-  def players_addon(self, value):
-    self._players_addon = safe_int(value)  
-    
-  @property
-  def players_addonstack(self):
-    return self._players_addonstack
-    
-  @players_addonstack.setter
-  def players_addonstack(self, value):
-    self._players_addonstack = safe_int(value)
-    
-  @property
-  def players_rebuy(self):
-    return self._players_rebuy
-    
-  @players_rebuy.setter
-  def players_rebuy(self, value):
-    self._players_rebuy = safe_int(value)  
-
-  @property
-  def players_rebuystack(self):
-    return self._players_rebuystack
-    
-  @players_rebuystack.setter
-  def players_rebuystack(self, value):
-    self._players_rebuystack = safe_int(value)
     
   def add_level(self, name, minutes):
     if self._timeblocks :
@@ -239,20 +142,8 @@ class XMLEventHandler(ContentHandler):
   def startElement(self, name, attrs):
     if name == 'tournament':
       self._t.tournament_title = attrs.get('title',"")
-    elif name == 'banners':   
-      self._t.banners_path = attrs.get('path',"")
-      self._t.banners_seconds = safe_int(float(attrs.get('minutes',"")) * 60)
     elif name == 'sounds':
       self._t.sounds_path = attrs.get('path',"")
-    elif name == 'players':
-      self._t.players_startstack = attrs.get('startstack',"")
-      self._t.players_start = attrs.get('start',"")
-      self._t.players_out = attrs.get('out',"")
-      self._t.players_addon = attrs.get('addon',"")
-      self._t.players_addonstack = attrs.get('addonstack',"")
-      self._t.players_rebuy = attrs.get('rebuy',"")
-      self._t.players_rebuystack = attrs.get('rebuystack',"")
-      self._t.players_paid = attrs.get('paid',"")
     elif name == 'level':
       self._t.add_level(attrs.get('name',""), safe_int(attrs.get('minutes',"")))
     elif name == 'break':
@@ -471,15 +362,46 @@ class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
     def player_add(self,player):
         pass
 
+    def player_bust(self,player):
+        pass
+
     def rebuy(self,player):
+        pass
+
+    def del_rebuy(self,player):
         pass
     
     def pause_pressed(self):
       pass
 
+    def next_round(self):
+      pass
+
+    def previous_round(self):
+      pass
+
     def keyPressEvent(self, a0: QtGui.QKeyEvent) -> None:
       k = super().keyPressEvent(a0)
       print('{0} ==> {1}',(str(a0.key()),a0.text()))
+      if a0.key() == QtCore.Qt.Key_A:
+        self.player_add()
+      elif a0.key() == QtCore.Qt.Key_X:
+        self.player_bust()
+      elif a0.key() == QtCore.Qt.Key_R:
+        self.rebuy()
+      elif a0.key() == QtCore.Qt.Key_E:
+        self.del_rebuy()
+      elif a0.key() == QtCore.Qt.Key_Space:
+        self.rebuy()
+      elif a0.key() == QtCore.Qt.Key_R:
+        self.rebuy()
+      elif a0.key() == QtCore.Qt.Key_N:
+        self.next_round()
+      elif a0.key() == QtCore.Qt.Key_B:
+        self.previous_round()
+#      elif a0.modifiers() & Qt.ControlModifier:
+#        if a0.key() == Qt.Key_R:
+      
       return k
 
 

@@ -118,6 +118,9 @@
       <pointsize>14</pointsize>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
     <property name="text">
      <string>Players--</string>
     </property>
@@ -135,6 +138,9 @@
      <font>
       <pointsize>14</pointsize>
      </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
     </property>
     <property name="text">
      <string>Exit</string>
@@ -154,8 +160,14 @@
       <pointsize>14</pointsize>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
     <property name="text">
      <string>Players++</string>
+    </property>
+    <property name="flat">
+     <bool>false</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="pb_rebuy">
@@ -171,6 +183,9 @@
      <font>
       <pointsize>14</pointsize>
      </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
     </property>
     <property name="text">
      <string>Rebuy</string>
@@ -239,6 +254,12 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>pb_Exit</tabstop>
+  <tabstop>pb_playerOut</tabstop>
+  <tabstop>pb_playerAdd</tabstop>
+  <tabstop>pb_rebuy</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
