@@ -101,14 +101,17 @@ class Tournament(object):
     self._banners_seconds = 60
     
     self._sounds_path = None
+    self._payouts_path = None
     
     self._total_players = 0
-    self._num_players = 0
-    self._players_out = 0
+    self._current_players = 0
     self._players_addon = 0
     self._players_addonstack = 0
     self._num_players_rebuy = 0
     self._players_rebuystack = 0
+    self._players = []
+    self._prize_pool = 0
+    self._payout_groups= []
     
     self._timeblocks = [] # tuples of the form (start_at_seconds, duration, name, is_break)
     self._current_timeblock = 0
@@ -131,7 +134,31 @@ class Tournament(object):
     
   def get_timeblocks(self):
     return self._timeblocks
+  
+  def get_current_blinds(self):
+    return self._timeblocks
+
+  def add_player(self,player):
+    self._num_players += 1    
+    self._players.append(player)
+    self._prize_pool += self._buyin
+
+  def rebuy(self,player):
+    self._num_players_rebuy += 1
+
+  def set_buyin(self,buyin):
+    self._buyin = buyin
+
+  def set_rebuy(self,rebuy):
+    self._rebuy = rebuy
+
+  def set_addon(self,addon):
+    self._addon = addon
+
+  def add_payout_group(self,g):
+    places = ['1st','2nd','3rd','4th','5th','6th']
     
+    self._payout_groups.append(g)
 
 #===============================================================================================
 
@@ -148,6 +175,23 @@ class XMLEventHandler(ContentHandler):
       self._t.add_level(attrs.get('name',""), safe_int(attrs.get('minutes',"")))
     elif name == 'break':
       self._t.add_break(attrs.get('name',""), safe_int(attrs.get('minutes',"")))
+    elif name == 'buyin':
+      self._t.set_buyin(safe_int(attrs.get('amount',"")))
+    elif name == 'rebuy':
+      self._t.set_rebuy(safe_int(attrs.get('amount',"")))
+    elif name == 'payouts':
+      self._t._payouts_path = attrs.get('path',"")
+    elif name == 'payout':
+      t = attrs.get('title',"")
+    elif name == 'payout_group':
+      number = int(attrs.get('number',""))
+      first = float(attrs.get('first',""))
+      second = float(attrs.get('second',""))
+      third = float(attrs.get('third',""))
+      fourth = float(attrs.get('fourth',""))
+      fifth = float(attrs.get('fifth',""))
+      sixth = float(attrs.get('sixth',""))
+      self._t.add_payout_group([number, first, second, third, fourth, fifth, sixth])
 
   def endElement(self, name): 
     pass
@@ -210,16 +254,106 @@ class SoundMan( object ):
     else:
       messageBox(TITLE, "No file called %s" % filename)
 
+#===============================================================================================
+
+class TimeCursor(object):
+  def __init__(self, tournament):
+    self._t = tournament
+    self._run = False
+    self._now = datetime.datetime.now()
+    self._begin = datetime.datetime.now()
+    self._block = 0
+    
+  def goto_timeblock(self, i):
+    sec = 0
+    blocks = self._t.get_timeblocks()
+    self._block = max(0, min(i, len(blocks)-1))
+    level = blocks[ self._block ]
+    self._now = datetime.datetime.now()
+    self._begin = self._now - datetime.timedelta(seconds=level[0])
+    
+    
+  def goto_time(self, sec):
+    self._now = datetime.datetime.now()
+    self._begin = self._now - datetime.timedelta(seconds=sec)
+    blocks = self._t.get_timeblocks()
+    self._block = len(blocks) - 1 # end of blocks 
+    for x in range(len(blocks)) :
+      if blocks[x][0] + blocks[x][1] > sec :
+        self._block = x
+        break # early exit
+    return
+    
+  def _get_timeblock(self, index):
+    "returns a dictionary, to try to abstract out the representation"
+    try:
+      timeblock = self._t.get_timeblocks()[ index ]
+      ret = { 'starttime' : timeblock[0], 'duration': timeblock[1] , 'name' : timeblock[2], 'isbreak' : timeblock[3] }
+    except:
+      ret = None
+      pass
+    return ret
+    
+  def get_current_timeblock(self):
+    "returns a dictionary, to try to abstract out the representation"
+    return self._get_timeblock( self._block )
+    
+  def get_current_timeblock_index(self):
+    return self._block
+
+  def get_next_level(self):
+    "returns a dictionary, to try to abstract out the representation"
+    blocks = self._t.get_timeblocks()
+    for x in range(self._block+1, len(blocks)):
+      if not blocks[x][3] :
+        return self._get_timeblock(x) # early exit
+    return None
+    
+  def get_next_break(self):
+    "returns a dictionary, to try to abstract out the representation"
+    blocks = self._t.get_timeblocks()
+    for x in range(self._block+1, len(blocks)):
+      if blocks[x][3] :
+        return self._get_timeblock(x) # early exit
+    return None
+    
+  def get_elapsed_seconds(self):
+    return( self._now - self._begin ).total_seconds()
+    
+  def press_pause(self):
+    if self._run :
+      self._run = False
+    
+  def press_play(self):
+    if not self._run :
+      duration = self._now - self._begin
+      self._now = datetime.datetime.now()
+      self._begin = self._now - duration
+      self._run = True
+      
+  def is_playing(self):
+    return self._run
+      
+  def tick(self):
+    "Called periodically to keep the cursor up to date"
+    if self._run :
+      self._now = datetime.datetime.now()
+      sec = self.get_elapsed_seconds()
+      timeblock = self._t.get_timeblocks()[ self._block ]
+      if sec >= ( timeblock[0] + timeblock[1] ) :
+        self._block = min( len(self._t.get_timeblocks()) - 1, self._block + 1 )
+    return
+    
 
 #===============================================================================================
   
 class ClockController( object ):
-  def __init__(self, display_man, sound_man, time_cursor):
+  def __init__(self, sound_man, time_cursor):
     #self._display_man = display_man
-    #self._sound_man = sound_man    
-    #self._time_cursor = time_cursor
+    self._sound_man = sound_man    
+    self._time_cursor = time_cursor
     self._run = False
-    self._timer = None
+    self._timer = QtCore.QTimer()
     
     self._lasttime = 999999999
     self._lastlevel = -999999
@@ -241,11 +375,10 @@ class ClockController( object ):
   def update_time_info(self, do_force=False):
     if self._run or do_force:
       #self._timer = self._display_man.start_timer( 99, self.update_time_info)
-      self._timer = self.QTimer()
       self._timer.timeout.connect(self.update_time_info)
       self._timer.start(100)
 
-      #self._time_cursor.tick()
+      self._time_cursor.tick()
       
       #
       # update visuals:
@@ -310,6 +443,22 @@ class player:
         self.name = name
         self.rebuys = 0
 
+def parsexml(tourn,fname):
+  # open XML file
+  try:
+    parser = make_parser()   
+    curHandler = XMLEventHandler(tourn)
+    parser.setContentHandler(curHandler)
+    fin = open(fname)
+
+    parser.parse(fin)
+    fin.close()
+  except Exception as e:
+    messageBox(TITLE, "Tournament XML file does not read correctly\n\n%s" % '\n'.join(traceback.format_exception_only(type(e), e)))
+    sys.exit(-1)
+  # -------------------------------------------------------
+
+
 class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
     def __init__(self, parent=None):
         super(ExampleApp, self).__init__(parent)
@@ -320,25 +469,19 @@ class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
         self.buyin = 20
         #size = self.size()
 
-
+        # -------------------------------------------------------
         self.tournament = Tournament()
-
-
         #(fname,ftype) = QFileDialog.getOpenFileName(self, 'Open file', '.',"XML files (*.xml)")
-        fname = '/home/chall/dev/poker/SimpleTournamentClock_v1.3.0/examples/structures/QuickTest.xml'
-        # open XML file
-        try:
-          parser = make_parser()   
-          curHandler = XMLEventHandler(self.tournament)
-          parser.setContentHandler(curHandler)
-          fin = open(fname)
-
-          parser.parse(fin)
-          fin.close()
-        except Exception as e:
-          messageBox(TITLE, "Tournament XML file does not read correctly\n\n%s" % '\n'.join(traceback.format_exception_only(type(e), e)))
-          sys.exit(-1)
-
+        fname = '/home/chall/dev/poker/SimpleTournamentClock_v1.3.0/examples/structures/legion.xml'
+        parsexml(self.tournament, fname)
+        if self.tournament._payouts_path is not None:
+          (path, f) = os.path.split(fname)
+          payouts_path = os.path.join(path,self.tournament._payouts_path)
+          self.tournament._payouts_path = payouts_path
+          parsexml(self.tournament, self.tournament._payouts_path)
+        # -------------------------------------------------------
+        self.time_cursor = TimeCursor( self.tournament )
+        # -------------------------------------------------------
         self.sound_man = SoundMan("./SimpleTournamentClock_v1.3.0/examples/sounds")
         #ret = int(messageBox(TITLE, "Do sound check now?",yesno=True))
         ret = -1    # TODO fix the sounds!!!!
@@ -347,10 +490,14 @@ class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
           while retry :
             self.sound_man.sound_check()
             retry = messageBox(TITLE, "Do sound check again?",yesno=True)
-        
+        # -------------------------------------------------------
+        self.clock_controller = ClockController(self.sound_man, self.time_cursor )
+        # -------------------------------------------------------
 
         self.pb_playerAdd.clicked.connect(self.player_add)
         self.pb_rebuy.clicked.connect(self.rebuy)
+        self.pb_Exit.clicked.connect(self.exit)
+        
         self.refresh_screen()
 
     def refresh_screen(self):
@@ -379,6 +526,9 @@ class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
 
     def previous_round(self):
       pass
+
+    def exit(self):
+      exit()
 
     def keyPressEvent(self, a0: QtGui.QKeyEvent) -> None:
       k = super().keyPressEvent(a0)
