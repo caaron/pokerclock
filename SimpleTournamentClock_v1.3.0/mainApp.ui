@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>974</width>
-    <height>600</height>
+    <width>1113</width>
+    <height>645</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,12 +20,12 @@
       <x>10</x>
       <y>20</y>
       <width>481</width>
-      <height>211</height>
+      <height>171</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>90</pointsize>
+      <pointsize>120</pointsize>
      </font>
     </property>
     <property name="text">
@@ -49,7 +49,7 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>18</pointsize>
+      <pointsize>24</pointsize>
      </font>
     </property>
     <property name="text">
@@ -61,13 +61,13 @@
      <rect>
       <x>420</x>
       <y>190</y>
-      <width>331</width>
+      <width>421</width>
       <height>131</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>72</pointsize>
+      <pointsize>90</pointsize>
      </font>
     </property>
     <property name="text">
@@ -79,7 +79,7 @@
      <rect>
       <x>420</x>
       <y>340</y>
-      <width>331</width>
+      <width>401</width>
       <height>131</height>
      </rect>
     </property>
@@ -103,39 +103,18 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>14</pointsize>
+      <pointsize>18</pointsize>
      </font>
     </property>
     <property name="text">
      <string>Prizes</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pb_playerOut">
-    <property name="geometry">
-     <rect>
-      <x>860</x>
-      <y>50</y>
-      <width>111</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
-    </property>
-    <property name="text">
-     <string>Players--</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="pb_Exit">
     <property name="geometry">
      <rect>
-      <x>870</x>
-      <y>450</y>
+      <x>1010</x>
+      <y>570</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -155,8 +134,8 @@
    <widget class="QPushButton" name="pb_playerAdd">
     <property name="geometry">
      <rect>
-      <x>860</x>
-      <y>10</y>
+      <x>1000</x>
+      <y>20</y>
       <width>111</width>
       <height>31</height>
      </rect>
@@ -179,8 +158,8 @@
    <widget class="QPushButton" name="pb_rebuy">
     <property name="geometry">
      <rect>
-      <x>860</x>
-      <y>90</y>
+      <x>1000</x>
+      <y>120</y>
       <width>111</width>
       <height>31</height>
      </rect>
@@ -200,8 +179,8 @@
    <widget class="QPushButton" name="pb_start">
     <property name="geometry">
      <rect>
-      <x>860</x>
-      <y>210</y>
+      <x>1000</x>
+      <y>310</y>
       <width>111</width>
       <height>31</height>
      </rect>
@@ -221,9 +200,9 @@
    <widget class="QLabel" name="lbl_nPlayers">
     <property name="geometry">
      <rect>
-      <x>690</x>
-      <y>20</y>
-      <width>121</width>
+      <x>830</x>
+      <y>70</y>
+      <width>151</width>
       <height>31</height>
      </rect>
     </property>
@@ -239,9 +218,9 @@
    <widget class="QLabel" name="lbl_nRebuys">
     <property name="geometry">
      <rect>
-      <x>690</x>
-      <y>90</y>
-      <width>121</width>
+      <x>830</x>
+      <y>120</y>
+      <width>141</width>
       <height>31</height>
      </rect>
     </property>
@@ -257,8 +236,8 @@
    <widget class="QPushButton" name="pb_next">
     <property name="geometry">
      <rect>
-      <x>860</x>
-      <y>300</y>
+      <x>1000</x>
+      <y>400</y>
       <width>111</width>
       <height>31</height>
      </rect>
@@ -278,8 +257,8 @@
    <widget class="QPushButton" name="pb_prev">
     <property name="geometry">
      <rect>
-      <x>860</x>
-      <y>350</y>
+      <x>1000</x>
+      <y>450</y>
       <width>111</width>
       <height>31</height>
      </rect>
@@ -296,13 +275,151 @@
      <string>Prev Round</string>
     </property>
    </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>230</y>
+      <width>191</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Current Blinds</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>380</y>
+      <width>191</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Next Blinds</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>220</y>
+      <width>151</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Current Time</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_rake">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>460</y>
+      <width>761</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Rake</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_chop">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>560</y>
+      <width>761</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Chop</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_TotalPlayers">
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>20</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pb_bust">
+    <property name="geometry">
+     <rect>
+      <x>1000</x>
+      <y>70</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Bust</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>974</width>
+     <width>1113</width>
      <height>20</height>
     </rect>
    </property>
@@ -323,9 +440,19 @@
      <string>Setup</string>
     </property>
     <addaction name="actionBlinds"/>
+    <addaction name="actionTables"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuPlayers">
+    <property name="title">
+     <string>Players</string>
+    </property>
+    <addaction name="actionRemove_Player_Buyin"/>
+    <addaction name="actionDel_Rebuy"/>
    </widget>
    <addaction name="menuMain"/>
    <addaction name="menuSetup"/>
+   <addaction name="menuPlayers"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionBlinds">
@@ -358,10 +485,34 @@
     <string>Exit</string>
    </property>
   </action>
+  <action name="actionTables">
+   <property name="text">
+    <string>Tables</string>
+   </property>
+  </action>
+  <action name="actionRemove_Player">
+   <property name="text">
+    <string>Remove Player</string>
+   </property>
+  </action>
+  <action name="actionRemove_Rebuy">
+   <property name="text">
+    <string>Remove Rebuy</string>
+   </property>
+  </action>
+  <action name="actionRemove_Player_Buyin">
+   <property name="text">
+    <string>Remove Player Buyin</string>
+   </property>
+  </action>
+  <action name="actionDel_Rebuy">
+   <property name="text">
+    <string>Remove Rebuy</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>pb_Exit</tabstop>
-  <tabstop>pb_playerOut</tabstop>
   <tabstop>pb_playerAdd</tabstop>
   <tabstop>pb_rebuy</tabstop>
  </tabstops>

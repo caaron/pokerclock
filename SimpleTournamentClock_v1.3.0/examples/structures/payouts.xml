@@ -1,5 +1,5 @@
 <payouts>
-
+   <buyin_rake type="dollar" amount="5"></buyin_rake>
    <payout_group number='5' first="1.0" second="0" third="0" fourth="0" fifth="0" sixth="0"></payout_group>
    <payout_group number='9' first=".67" second=".33" third="0" fourth="0" fifth="0" sixth="0"></payout_group>
    <payout_group number='13' first=".55" second=".30" third=".15" fourth="0" fifth="0" sixth="0"></payout_group>

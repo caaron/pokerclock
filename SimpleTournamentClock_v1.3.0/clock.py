@@ -112,6 +112,7 @@ class Tournament(object):
     self._players = []
     self._prize_pool = 0
     self._payout_groups= []
+    self._rake = {}
     
     self._timeblocks = [] # tuples of the form (start_at_seconds, duration, name, is_break)
     self._current_timeblock = 0
@@ -171,10 +172,11 @@ class XMLEventHandler(ContentHandler):
       self._t.set_buyin(safe_int(attrs.get('amount',"")))
     elif name == 'rebuy':
       self._t.set_rebuy(safe_int(attrs.get('amount',"")))
+    elif name == 'buyin_rake':
+      self._t._rake["type"] = attrs.get('type',"dollar")
+      self._t._rake["amount"] = attrs.get('amount',"5")
     elif name == 'payouts':
       self._t._payouts_path = attrs.get('path',"")
-    elif name == 'payout':
-      t = attrs.get('title',"")
     elif name == 'payout_group':
       number = int(attrs.get('number',""))
       first = float(attrs.get('first',""))
@@ -184,6 +186,8 @@ class XMLEventHandler(ContentHandler):
       fifth = float(attrs.get('fifth',""))
       sixth = float(attrs.get('sixth',""))
       self._t.add_payout_group([number, first, second, third, fourth, fifth, sixth])
+    else:
+      pass
 
   def endElement(self, name): 
     pass
@@ -534,6 +538,8 @@ class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
         self.nRebuys = 0
         self.prizePool = 0
         self.buyin = 20
+        self.rake = 0
+        self.nBusted_players = 0
         #size = self.size()
 
         # -------------------------------------------------------
@@ -561,11 +567,13 @@ class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
         # -------------------------------------------------------
         #self.clock_controller = ClockController(self.sound_man, self.time_cursor )
         # -------------------------------------------------------
-        self.pb_playerAdd.clicked.connect(self.player_add)
-        self.pb_playerOut.clicked.connect(self.player_bust)
+        self.pb_playerAdd.clicked.connect(self.player_add)        
         self.pb_rebuy.clicked.connect(self.rebuy)
         self.pb_Exit.clicked.connect(self.exit)
         self.pb_start.clicked.connect(self.play_pressed)
+        self.pb_bust.clicked.connect(self.player_bust)
+        self.actionRemove_Player_Buyin.triggered.connect(self.remove_player)
+        self.actionDel_Rebuy.triggered.connect(self.remove_rebuy)
         
         self.refresh_screen()
 
@@ -574,26 +582,72 @@ class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
 
     def refresh_screen(self):
       # refresh # of players, # of rebuys, prizes, 
-      self.lbl_nPlayers.setText(f'Players:{self.nPlayers}')
+      self.lbl_nPlayers.setText(f'Players:{self.nPlayers - self.nBusted_players}')
       self.lbl_nRebuys.setText(f'Rebuys:{self.nRebuys}')
-
+      self.lbl_TotalPlayers.setText(f'Total Players:{self.nPlayers}')
+      self.calculate_payouts()
       pass
 
+    def calculate_payouts(self):
+      if self.tournament._payout_groups:
+        idx = 0
+        while self.tournament._payout_groups[idx][0] < self.nPlayers and idx < len(self.tournament._payout_groups):
+          idx += 1
+        payouts = self.tournament._payout_groups[idx]
+        self.prizePool = self.nPlayers * self.tournament._buyin
+        if self.tournament._rake["type"]=="dollar":
+          self.rake = self.nPlayers * int(self.tournament._rake["amount"])
+        elif self.tournament._rake["type"]=="percentage":
+          self.rake = self.nPlayers * self.tournament._buyin * int(self.tournament._rake["amount"])
 
-    def player_add(self,player):
+        self.lbl_rake.setText(f'Rake: ${self.rake}')
+        self.prizePool = (self.nPlayers * self.tournament._buyin) - self.rake
+        first = int(payouts[1] * self.prizePool)
+        second = int(payouts[2] * self.prizePool)
+        third = int(payouts[3] * self.prizePool)
+        fourth = int(payouts[4] * self.prizePool)
+        fifth = int(payouts[5] * self.prizePool)
+        sixth = int(payouts[6] * self.prizePool)
+        prizes = f'Prizes:  1st:${first} '
+        if second > 0:
+          prizes += f'2nd:${second} '
+        if third > 0:
+          prizes += f'3rd:${third} '
+        if fourth > 0:
+          prizes += f'4th:${fourth} '
+        if fifth > 0:
+          prizes += f'5th:${fifth} '
+        if sixth > 0:
+          prizes += f'6th:${sixth} '
+        self.Prizes.setText(prizes)
+        if self.nPlayers > 0:
+          chop = int(self.prizePool / (self.nPlayers - self.nBusted_players))
+        else:
+          chop = 0
+        self.lbl_chop.setText(f'Chop: ${chop}')
+      
+    def player_add(self,player=None):
         self.nPlayers += 1
         self.refresh_screen()
 
-    def player_bust(self,player):
+    def remove_player(self,player=None):
         self.nPlayers -= 1
+        if self.nPlayers < 0:
+          self.nPlayers = 0
+        self.refresh_screen()
+
+    def player_bust(self,player):
+        self.nBusted_players += 1
         self.refresh_screen()
 
     def rebuy(self,player):
         self.nRebuys += 1
         self.refresh_screen()
 
-    def del_rebuy(self,player):
+    def remove_rebuy(self,player):
         self.nRebuys -= 1
+        if self.nRebuys < 0:
+          self.nRebuys = 0
         self.refresh_screen()
     
     def pause_pressed(self):
