@@ -163,10 +163,10 @@ class XMLEventHandler(ContentHandler):
       self._t.tournament_title = attrs.get('title',"")
     elif name == 'sounds':
       self._t.sounds_path = attrs.get('path',"")
-    elif name == 'level':
+    elif name == 'level' or name == 'break':
       self._t.add_level(attrs.get('name',""), safe_int(attrs.get('minutes',"")))
-    elif name == 'break':
-      self._t.add_break(attrs.get('name',""), safe_int(attrs.get('minutes',"")))
+    #elif name == 'break':
+    #  self._t.add_break(attrs.get('name',""), safe_int(attrs.get('minutes',"")))
     elif name == 'buyin':
       self._t.set_buyin(safe_int(attrs.get('amount',"")))
     elif name == 'rebuy':
@@ -508,17 +508,19 @@ class BlindTimer:
         self._mins -= 1
         if self._mins < 0:
         # now do all the next round stuff
+          self._BlindsIndex += 1
+          self.get_current_blinds()
           self.reset_level()
-          self.get_next_blinds()
     else:
       # make background of blinds red to show paused
       pass
-    self._parent.PokerClock.setText(f'{self._mins}:+{self._secs:02}')   
+    self._parent.PokerClock.setText(f'{self._mins}:{self._secs:02}')   
 
   def update_blinds(self):
     self._parent.Blinds.setText(self.blindText)
     (nextRnd, nextblinds) = self.get_next_blinds()
     self._parent.Blinds_2.setText(nextblinds)
+    self._parent.CurrentTime.setText(datetime.datetime.now().strftime('%I:%M%p'))
     
 
 
@@ -528,7 +530,8 @@ class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
         super(ExampleApp, self).__init__(parent)
         self.setupUi(self)
 
-        self.players = 0
+        self.nPlayers = 0
+        self.nRebuys = 0
         self.prizePool = 0
         self.buyin = 20
         #size = self.size()
@@ -558,10 +561,11 @@ class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
         # -------------------------------------------------------
         #self.clock_controller = ClockController(self.sound_man, self.time_cursor )
         # -------------------------------------------------------
-
         self.pb_playerAdd.clicked.connect(self.player_add)
+        self.pb_playerOut.clicked.connect(self.player_bust)
         self.pb_rebuy.clicked.connect(self.rebuy)
         self.pb_Exit.clicked.connect(self.exit)
+        self.pb_start.clicked.connect(self.play_pressed)
         
         self.refresh_screen()
 
@@ -570,21 +574,27 @@ class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
 
     def refresh_screen(self):
       # refresh # of players, # of rebuys, prizes, 
+      self.lbl_nPlayers.setText(f'Players:{self.nPlayers}')
+      self.lbl_nRebuys.setText(f'Rebuys:{self.nRebuys}')
 
       pass
 
 
     def player_add(self,player):
-        self.tournament.add_player()
+        self.nPlayers += 1
+        self.refresh_screen()
 
     def player_bust(self,player):
-        pass
+        self.nPlayers -= 1
+        self.refresh_screen()
 
     def rebuy(self,player):
-        pass
+        self.nRebuys += 1
+        self.refresh_screen()
 
     def del_rebuy(self,player):
-        pass
+        self.nRebuys -= 1
+        self.refresh_screen()
     
     def pause_pressed(self):
       pass
@@ -594,6 +604,16 @@ class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
 
     def previous_round(self):
       pass
+
+    def play_pressed(self):
+      if self.pb_start.text() == 'Start':
+        self._timer.start()
+        self.pb_start.setText('Pause')
+      else:
+        self._timer.pause()
+        self.pb_start.setText('Start')
+
+
 
     def exit(self):
       exit()
