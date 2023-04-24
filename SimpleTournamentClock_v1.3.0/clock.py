@@ -119,18 +119,10 @@ class Tournament(object):
     self._pause = True # start the tournament(?)
     
   def add_level(self, name, minutes):
-    if self._timeblocks :
-      last_level = self._timeblocks[-1]
-      self._timeblocks.append( (last_level[0] + last_level[1], minutes * 60, name, False ))
-    else :
-      self._timeblocks.append( (0, minutes * 60, name, False ) )
+    self._timeblocks.append( (minutes, name, False ) )
     
   def add_break(self, name, minutes):
-    if self._timeblocks :
-      last_level = self._timeblocks[-1]
-      self._timeblocks.append( (last_level[0] + last_level[1], minutes * 60, name, True ))
-    else :
-      self._timeblocks.append( (0, minutes * 60, name, True ) )
+    self._timeblocks.append( (minutes, name, True ))
     
   def get_timeblocks(self):
     return self._timeblocks
@@ -457,6 +449,78 @@ def parsexml(tourn,fname):
     messageBox(TITLE, "Tournament XML file does not read correctly\n\n%s" % '\n'.join(traceback.format_exception_only(type(e), e)))
     sys.exit(-1)
   # -------------------------------------------------------
+class BlindTimer:
+  def __init__(self, parent) -> None:
+    #super().__init__(parent)
+    self._parent = parent
+    self._timer = QtCore.QTimer()
+    self._timer.timeout.connect(self.blindTimerCallback)
+    self.smallBlind = 0
+    self.blindText = 0
+    self.reset()
+    self.update_blinds()
+
+  def reset_level(self):
+    self._mins = self.roundTime
+    self._secs = 0
+    self._parent.PokerClock.setText(f'{self._mins}:{self._secs:02}')   
+
+
+  def reset(self):
+    self._BlindsIndex = 0
+    self._run = False
+    (self.roundTime, self.blindText) = self.get_current_blinds()
+    self.reset_level()
+        
+  def pause(self):
+    self._run = False
+    self._timer.stop()
+
+  def start(self):
+    self._run = True
+    self._timer.start(1000)    #in ms
+
+  def set_round(self,mins):
+    self._mins = mins
+    self._secs = 0
+
+  def get_next_blinds(self):
+    if self._BlindsIndex < len(self._parent.tournament._timeblocks):
+      roundTime = self._parent.tournament._timeblocks[self._BlindsIndex+1][0]
+      blindText = self._parent.tournament._timeblocks[self._BlindsIndex+1][1]
+    else:
+      roundTime = 9999
+      blindText = 'NULL'
+    return (roundTime, blindText)
+
+
+  def get_current_blinds(self):
+    self.roundTime = self._parent.tournament._timeblocks[self._BlindsIndex][0]
+    self.blindText = self._parent.tournament._timeblocks[self._BlindsIndex][1]
+    return (self.roundTime, self.blindText)
+
+  def blindTimerCallback(self):
+    if self._run:
+      self._timer.start(1000)   # start again
+      self._secs -= 1
+      if self._secs < 0:
+        self._secs = 59
+        self._mins -= 1
+        if self._mins < 0:
+        # now do all the next round stuff
+          self.reset_level()
+          self.get_next_blinds()
+    else:
+      # make background of blinds red to show paused
+      pass
+    self._parent.PokerClock.setText(f'{self._mins}:+{self._secs:02}')   
+
+  def update_blinds(self):
+    self._parent.Blinds.setText(self.blindText)
+    (nextRnd, nextblinds) = self.get_next_blinds()
+    self._parent.Blinds_2.setText(nextblinds)
+    
+
 
 
 class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
@@ -480,7 +544,8 @@ class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
           self.tournament._payouts_path = payouts_path
           parsexml(self.tournament, self.tournament._payouts_path)
         # -------------------------------------------------------
-        self.time_cursor = TimeCursor( self.tournament )
+        #self.time_cursor = TimeCursor( self.tournament )
+        self._timer =  BlindTimer(self)
         # -------------------------------------------------------
         self.sound_man = SoundMan("./SimpleTournamentClock_v1.3.0/examples/sounds")
         #ret = int(messageBox(TITLE, "Do sound check now?",yesno=True))
@@ -491,7 +556,7 @@ class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
             self.sound_man.sound_check()
             retry = messageBox(TITLE, "Do sound check again?",yesno=True)
         # -------------------------------------------------------
-        self.clock_controller = ClockController(self.sound_man, self.time_cursor )
+        #self.clock_controller = ClockController(self.sound_man, self.time_cursor )
         # -------------------------------------------------------
 
         self.pb_playerAdd.clicked.connect(self.player_add)
@@ -500,6 +565,9 @@ class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
         
         self.refresh_screen()
 
+    def update_blinds(self):
+      pass
+
     def refresh_screen(self):
       # refresh # of players, # of rebuys, prizes, 
 
@@ -507,7 +575,7 @@ class ExampleApp(QtWidgets.QMainWindow, clockUI.Ui_MainWindow):
 
 
     def player_add(self,player):
-        pass
+        self.tournament.add_player()
 
     def player_bust(self,player):
         pass
